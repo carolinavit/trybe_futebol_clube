@@ -7,25 +7,11 @@ import { app } from '../app';
 import Team from '../database/models/TeamModel';
 
 import { Response } from 'superagent';
+import { getAllTeams } from './mocks/mock.teams';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
-
-const getAllTeams = [
-  {
-    id: 1,
-    teamName: 'Avaí/Kindermann',
-  },
-  {
-    id: 2,
-    teamName: 'Bahia',
-  },
-  {
-    id: 3,
-    teamName: 'Botafogo',
-  },
-];
 
 describe('Testa endpoint /teams', () => {
 
