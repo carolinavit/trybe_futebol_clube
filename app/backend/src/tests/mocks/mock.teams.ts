@@ -13,3 +13,8 @@ export const getAllTeams = [
   },
 ];
 
+export const oneTeam = {
+    id: 1,
+    teamName: 'Avaí/Kindermann',
+  };
+
