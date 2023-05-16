@@ -16,4 +16,11 @@ export default class UserService implements IUserService {
 
     return generateToken(email);
   };
+
+  getRole = async (email: string): Promise<string | undefined> => {
+    const user = await UserModel.findOne({
+      where: { email },
+    });
+    return user?.role;
+  };
 }

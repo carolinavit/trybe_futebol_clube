@@ -1,4 +1,5 @@
 import * as jwt from 'jsonwebtoken';
+import { IToken } from '../interfaces/Iuser.interface';
 
 const secretKey = process.env.JWT_SECRET || 'jwt_secret';
 
@@ -7,20 +8,18 @@ const configJWT: object = {
   algorithm: 'HS256',
 };
 
-export const generateToken = (user: string) => {
-  const token = jwt.sign({ user }, secretKey, configJWT);
+export const generateToken = (email: string) => {
+  const token = jwt.sign({ email }, secretKey, configJWT);
   return token;
 };
 
 export default generateToken;
 
-// export const validateToken = (token:string) => {
-//   if (!token) return false;
-//   try {
-//     const isValid = jwt.verify(token, secretKey);
-
-//     return isValid;
-//   } catch (error) {
-//     return {};
-//   }
-// };
+export const validateToken = (token: string): IToken => {
+  try {
+    const decoded = jwt.verify(token, secretKey) as IToken;
+    return decoded;
+  } catch (error) {
+    throw new Error();
+  }
+};
