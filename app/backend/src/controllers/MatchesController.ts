@@ -8,11 +8,18 @@ export default class MatchesController {
   constructor(InstanceOfMatchService = new MatchService()) {
     this.matchService = InstanceOfMatchService;
     this.getAll = this.getAll.bind(this);
+    this.finishMatch = this.finishMatch.bind(this);
   }
 
   async getAll(req: Request, res: Response): Promise<void> {
     const { inProgress } = req.query;
     const matches = await this.matchService.getAll(inProgress);
     res.status(200).json(matches);
+  }
+
+  async finishMatch(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    await this.matchService.finishMatch(id);
+    res.status(200).json({ message: 'Finished' });
   }
 }

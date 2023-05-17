@@ -9,4 +9,5 @@ export interface IMatch {
 
 export interface IMatchService {
   getAll(inProgress: unknown): Promise<IMatch[]>;
+  finishMatch(id: number): Promise<IMatch>;
 }

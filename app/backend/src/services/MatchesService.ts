@@ -18,4 +18,15 @@ export default class MatchService implements IMatchService {
     }
     return matches;
   };
+
+  finishMatch = async (id: number): Promise<IMatch> => {
+    const match = await Match.findOne({
+      where: { id },
+    });
+    if (!match) {
+      throw new Error('Id não encontrado');
+    }
+    await match?.update({ inProgress: false });
+    return match;
+  };
 }
