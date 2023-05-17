@@ -10,8 +10,9 @@ export default class MatchesController {
     this.getAll = this.getAll.bind(this);
   }
 
-  async getAll(_req: Request, res: Response): Promise<void> {
-    const matches = await this.matchService.getAll();
+  async getAll(req: Request, res: Response): Promise<void> {
+    const { inProgress } = req.query;
+    const matches = await this.matchService.getAll(inProgress);
     res.status(200).json(matches);
   }
 }

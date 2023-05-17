@@ -8,5 +8,5 @@ export interface IMatch {
 }
 
 export interface IMatchService {
-  getAll(): Promise<IMatch[]>;
+  getAll(inProgress: unknown): Promise<IMatch[]>;
 }
