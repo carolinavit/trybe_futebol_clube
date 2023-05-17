@@ -10,4 +10,9 @@ export interface IMatch {
 export interface IMatchService {
   getAll(inProgress: unknown): Promise<IMatch[]>;
   finishMatch(id: number): Promise<IMatch>;
+  update(
+    id: number,
+    awayTeamGoals: number,
+    homeTeamGoals: number,
+  ): Promise<IMatch | undefined>;
 }

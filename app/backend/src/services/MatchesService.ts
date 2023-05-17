@@ -29,4 +29,16 @@ export default class MatchService implements IMatchService {
     await match?.update({ inProgress: false });
     return match;
   };
+
+  update = async (
+    id: number,
+    awayTeamGoals: number,
+    homeTeamGoals: number,
+  ): Promise<IMatch | undefined> => {
+    const match = await Match.findOne({
+      where: { id },
+    });
+    const updated = await match?.update({ awayTeamGoals, homeTeamGoals });
+    return updated;
+  };
 }
