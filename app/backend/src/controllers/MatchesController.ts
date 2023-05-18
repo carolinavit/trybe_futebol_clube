@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { IMatchService } from '../interfaces/Imatch.interface';
 import MatchService from '../services/MatchesService';
 
@@ -10,6 +10,7 @@ export default class MatchesController {
     this.getAll = this.getAll.bind(this);
     this.finishMatch = this.finishMatch.bind(this);
     this.update = this.update.bind(this);
+    this.create = this.create.bind(this);
   }
 
   async getAll(req: Request, res: Response): Promise<void> {
@@ -29,5 +30,15 @@ export default class MatchesController {
     const { awayTeamGoals, homeTeamGoals } = req.body;
     const updated = await this.matchService.update(id, awayTeamGoals, homeTeamGoals);
     res.status(200).json({ message: updated });
+  }
+
+  async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const newMatch = req.body;
+      const createdNewMatch = await this.matchService.create(newMatch);
+      res.status(201).json(createdNewMatch);
+    } catch (error) {
+      next(error);
+    }
   }
 }

@@ -15,4 +15,5 @@ export interface IMatchService {
     awayTeamGoals: number,
     homeTeamGoals: number,
   ): Promise<IMatch | undefined>;
+  create(newMatch: IMatch): Promise<IMatch | undefined>;
 }

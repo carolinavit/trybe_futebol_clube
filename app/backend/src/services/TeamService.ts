@@ -14,7 +14,7 @@ export default class TeamService implements ITeamService {
     });
 
     if (!team) {
-      throw new Error('Time não encontrado');
+      throw new Error('There is no team with such id!');
     }
     return team;
   };
