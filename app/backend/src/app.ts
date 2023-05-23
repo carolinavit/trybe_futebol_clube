@@ -15,7 +15,7 @@ class App {
 
     this.app.use('/teams', teamsRoute);
     this.app.use('/login', userRoute);
-    this.app.use('/matches', matchesRoute);
+    this.app.use('/', matchesRoute);
     this.app.use(errorHandler);
 
     // Não remover essa rota

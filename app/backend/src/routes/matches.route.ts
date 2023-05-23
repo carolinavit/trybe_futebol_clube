@@ -6,9 +6,10 @@ const router = Router();
 
 const matchesController = new MatchesController();
 
-router.get('/', matchesController.getAll);
-router.patch('/:id/finish', authToken, matchesController.finishMatch);
-router.patch('/:id', authToken, matchesController.update);
-router.post('/', authToken, matchesController.create);
+router.get('/matches', matchesController.getAll);
+router.patch('/matches/:id/finish', authToken, matchesController.finishMatch);
+router.patch('/matches/:id', authToken, matchesController.update);
+router.post('/matches', authToken, matchesController.create);
+router.get('/leaderboard/home', matchesController.getHomeLeaderboard);
 
 export default router;

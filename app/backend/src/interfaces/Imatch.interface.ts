@@ -7,6 +7,21 @@ export interface IMatch {
   inProgress: boolean;
 }
 
+export interface IMatchLead extends IMatch {
+  homeTeam: { teamName: string }
+}
+
+export interface ILeaderboardTeam {
+  name: string;
+  totalPoints: number;
+  totalGames: number;
+  totalVictories: number;
+  totalDraws: number;
+  totalLosses: number;
+  goalsFavor: number;
+  goalsOwn: number;
+}
+
 export interface IMatchService {
   getAll(inProgress: unknown): Promise<IMatch[]>;
   finishMatch(id: number): Promise<IMatch>;
@@ -16,4 +31,5 @@ export interface IMatchService {
     homeTeamGoals: number,
   ): Promise<IMatch | undefined>;
   create(newMatch: IMatch): Promise<IMatch | undefined>;
+  getHomeLeaderboard(): Promise<ILeaderboardTeam[]>;
 }

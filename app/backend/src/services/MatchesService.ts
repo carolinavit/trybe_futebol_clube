@@ -1,7 +1,83 @@
 import Team from '../database/models/TeamModel';
 import Match from '../database/models/MatchesModel';
-import { IMatch, IMatchService } from '../interfaces/Imatch.interface';
+import {
+  ILeaderboardTeam,
+  IMatch,
+  IMatchLead,
+  IMatchService,
+} from '../interfaces/Imatch.interface';
 import TeamService from './TeamService';
+
+const getTotalPoints = (matches: IMatchLead[], id: number) => {
+  let totalPoints = 0;
+  matches
+    .filter((match) => match.homeTeamId === id)
+    .forEach((teamMatch) => {
+      if (teamMatch.homeTeamGoals > teamMatch.awayTeamGoals) {
+        totalPoints += 3;
+      }
+
+      if (teamMatch.homeTeamGoals === teamMatch.awayTeamGoals) {
+        totalPoints += 1;
+      }
+    });
+  return totalPoints;
+};
+
+const getTotalLosses = (matches: IMatchLead[], id: number) => {
+  let totalLosses = 0;
+  matches
+    .filter((match) => match.homeTeamId === id)
+    .forEach((teamMatch) => {
+      if (teamMatch.homeTeamGoals < teamMatch.awayTeamGoals) {
+        totalLosses += 1;
+      }
+    });
+  return totalLosses;
+};
+
+const getGolsFavor = (matches: IMatchLead[], id: number) => {
+  let goalsFavor = 0;
+  matches
+    .filter((match) => match.homeTeamId === id)
+    .forEach((teamMatch) => {
+      goalsFavor += teamMatch.homeTeamGoals;
+    });
+  return goalsFavor;
+};
+
+const getGolsOwn = (matches: IMatchLead[], id: number) => {
+  let goalsOwn = 0;
+  matches
+    .filter((match) => match.homeTeamId === id)
+    .forEach((teamMatch) => {
+      goalsOwn += teamMatch.awayTeamGoals;
+    });
+  return goalsOwn;
+};
+
+const getLeaderboard = (matches:IMatchLead[]) => {
+  const leaderboard: ILeaderboardTeam[] = [];
+
+  matches.forEach((match) => {
+    if (
+      !leaderboard.some((match2) => match2.name === match.homeTeam.teamName)
+    ) {
+      leaderboard.push({
+        name: match.homeTeam.teamName,
+        totalPoints: getTotalPoints(matches, match.homeTeamId),
+        totalGames: matches.filter((m) => m.homeTeamId === match.homeTeamId).length,
+        totalVictories: Math.floor(getTotalPoints(matches, match.homeTeamId) / 3),
+        totalDraws: Math.floor(getTotalPoints(matches, match.homeTeamId) % 3),
+        totalLosses: getTotalLosses(matches, match.homeTeamId),
+        goalsFavor: getGolsFavor(matches, match.homeTeamId),
+        goalsOwn: getGolsOwn(matches, match.homeTeamId),
+      });
+    }
+  });
+
+  return leaderboard;
+};
 
 export default class MatchService implements IMatchService {
   private teamService: TeamService;
@@ -57,7 +133,19 @@ export default class MatchService implements IMatchService {
     await this.teamService.getById(newMatch.homeTeamId);
     await this.teamService.getById(newMatch.awayTeamId);
 
-    const createNewMatch = await Match.create({ ...newMatch, inProgress: true });
+    const createNewMatch = await Match.create({
+      ...newMatch,
+      inProgress: true,
+    });
     return createNewMatch;
+  };
+
+  getHomeLeaderboard = async (): Promise<ILeaderboardTeam[]> => {
+    const matches = (await Match.findAll({
+      where: { inProgress: false },
+      include: [{ model: Team, as: 'homeTeam', attributes: ['teamName'] }],
+    })) as unknown as IMatchLead[];
+
+    return getLeaderboard(matches);
   };
 }
