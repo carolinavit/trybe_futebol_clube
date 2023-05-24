@@ -56,13 +56,30 @@ const getGolsOwn = (matches: IMatchLead[], id: number) => {
   return goalsOwn;
 };
 
-const getLeaderboard = (matches:IMatchLead[]) => {
-  const leaderboard: ILeaderboardTeam[] = [];
+const getGoalsBalance = (matches: IMatchLead[], id: number) =>
+  getGolsFavor(matches, id) - getGolsOwn(matches, id);
 
+const getEfficiency = (matches: IMatchLead[], id: number) => {
+  const points = getTotalPoints(matches, id);
+  const games = matches.filter((m) => m.homeTeamId === id).length;
+  return Number(((points / (games * 3)) * 100).toFixed(2));
+};
+
+const sortLeaderBoard = (matches: ILeaderboardTeam[]) =>
+  matches.sort((a, b) => {
+    if (a.totalPoints < b.totalPoints) return 1;
+    if (a.totalPoints > b.totalPoints) return -1;
+    if (a.goalsBalance < b.goalsBalance) return 1;
+    if (a.goalsBalance > b.goalsBalance) return -1;
+    if (a.goalsFavor < b.goalsFavor) return 1;
+    if (a.goalsFavor > b.goalsFavor) return -1;
+    return 0;
+  });
+
+const getLeaderboard = (matches: IMatchLead[]) => {
+  const leaderboard: ILeaderboardTeam[] = [];
   matches.forEach((match) => {
-    if (
-      !leaderboard.some((match2) => match2.name === match.homeTeam.teamName)
-    ) {
+    if (!leaderboard.some((match2) => match2.name === match.homeTeam.teamName)) {
       leaderboard.push({
         name: match.homeTeam.teamName,
         totalPoints: getTotalPoints(matches, match.homeTeamId),
@@ -72,10 +89,11 @@ const getLeaderboard = (matches:IMatchLead[]) => {
         totalLosses: getTotalLosses(matches, match.homeTeamId),
         goalsFavor: getGolsFavor(matches, match.homeTeamId),
         goalsOwn: getGolsOwn(matches, match.homeTeamId),
+        goalsBalance: getGoalsBalance(matches, match.homeTeamId),
+        efficiency: getEfficiency(matches, match.homeTeamId),
       });
     }
   });
-
   return leaderboard;
 };
 
@@ -146,6 +164,7 @@ export default class MatchService implements IMatchService {
       include: [{ model: Team, as: 'homeTeam', attributes: ['teamName'] }],
     })) as unknown as IMatchLead[];
 
-    return getLeaderboard(matches);
+    const result = getLeaderboard(matches);
+    return sortLeaderBoard(result);
   };
 }
